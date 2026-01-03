@@ -1,2 +1,42 @@
+# Os
 .DS_Store
-.idea
+Thumb.db
+desktop.ini
+
+# IDE/ Editors
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.code-workspace
+
+# Logs (global)
+logs/
+*.log
+
+# Environments
+.env
+.env.*
+!.env.example
+
+# Secrets/ Keys
+**/secrets/
+**/*secret*
+**/*credentials*
+*.pem
+*.key
+*.crt
+
+# Docker
+docker/*.env
+
+# Temporary Files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# System
+.pid
