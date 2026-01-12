@@ -1,0 +1,681 @@
+{
+  "title": "Curatix API Response Specification",
+  "version": "1.0.0",
+  "description": "Standard API responses for all Curatix services (Monolith & Microservices)",
+  "dataTypes": {
+    "description": "Data type definitions for all response fields",
+    "fields": {
+      "success": {
+        "type": "boolean",
+        "required": true,
+        "description": "Indicates if the operation was successful",
+        "values": [
+          "true",
+          "false"
+        ]
+      },
+      "status": {
+        "type": "integer",
+        "required": true,
+        "description": "HTTP status code",
+        "examples": [
+          200,
+          201,
+          400,
+          404,
+          500
+        ]
+      },
+      "message": {
+        "type": "string",
+        "required": true,
+        "description": "Human-readable message describing the result",
+        "maxLength": 255
+      },
+      "data": {
+        "type": "object | array | null",
+        "required": true,
+        "description": "Response payload data. Null for DELETE operations or when no data is returned"
+      },
+      "timestamp": {
+        "type": "string (ISO 8601)",
+        "required": true,
+        "description": "UTC timestamp when response was generated",
+        "format": "YYYY-MM-DDTHH:mm:ss.sssZ",
+        "example": "2024-01-10T14:48:00.000Z"
+      },
+      "error": {
+        "type": "object",
+        "required": false,
+        "description": "Error details object (only present when success=false)"
+      }
+    }
+  },
+  "responseStructures": {
+    "successResponse": {
+      "description": "Standard structure for all successful responses",
+      "structure": {
+        "success": "boolean (always true)",
+        "status": "integer (HTTP status code)",
+        "message": "string (success message)",
+        "data": "object | array | null (response payload)",
+        "timestamp": "string (ISO 8601 UTC)"
+      },
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "Operation successful",
+        "data": {},
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "errorResponse": {
+      "description": "Standard structure for all error responses (RFC 7807 based)",
+      "structure": {
+        "success": "boolean (always false)",
+        "error": {
+          "type": "string (error category)",
+          "title": "string (error title)",
+          "status": "integer (HTTP status code)",
+          "detail": "string (specific error message)",
+          "timestamp": "string (ISO 8601 UTC)",
+          "path": "string (API endpoint)",
+          "errors": "array (optional field-level errors)",
+          "traceId": "string (optional trace ID for debugging)",
+          "retryAfter": "integer (optional seconds to wait before retry)"
+        }
+      },
+      "example": {
+        "success": false,
+        "error": {
+          "type": "VALIDATION_ERROR",
+          "title": "Validation Failed",
+          "status": 400,
+          "detail": "One or more fields have validation errors",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users",
+          "errors": []
+        }
+      }
+    }
+  },
+  "successResponses": {
+    "1_singleResource": {
+      "description": "Response for retrieving a single resource",
+      "httpMethod": "GET",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "User retrieved successfully",
+        "data": {
+          "id": "string (UUID or Long)",
+          "name": "string",
+          "email": "string",
+          "role": "string (enum)",
+          "status": "string (enum)",
+          "createdAt": "string (ISO 8601)",
+          "updatedAt": "string (ISO 8601)"
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "2_createResource": {
+      "description": "Response for creating a new resource",
+      "httpMethod": "POST",
+      "statusCode": 201,
+      "example": {
+        "success": true,
+        "status": 201,
+        "message": "User created successfully",
+        "data": {
+          "id": "string (UUID or Long)",
+          "name": "string",
+          "email": "string",
+          "role": "string",
+          "createdAt": "string (ISO 8601)"
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "3_updateResource": {
+      "description": "Response for updating an existing resource",
+      "httpMethod": "PUT | PATCH",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "User updated successfully",
+        "data": {
+          "id": "string (UUID or Long)",
+          "name": "string",
+          "email": "string",
+          "role": "string",
+          "updatedAt": "string (ISO 8601)"
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "4_deleteResource": {
+      "description": "Response for deleting a resource",
+      "httpMethod": "DELETE",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "User deleted successfully",
+        "data": null,
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "5_paginatedCollection": {
+      "description": "Response for paginated list of resources",
+      "httpMethod": "GET",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "Users retrieved successfully",
+        "data": {
+          "content": [
+            {
+              "id": "string",
+              "name": "string",
+              "email": "string",
+              "role": "string"
+            }
+          ],
+          "page": {
+            "number": "integer (current page, 0-indexed)",
+            "size": "integer (items per page)",
+            "totalElements": "long (total items across all pages)",
+            "totalPages": "integer (total number of pages)"
+          }
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "6_filteredCollection": {
+      "description": "Response for filtered/searched paginated collection",
+      "httpMethod": "GET",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "Users retrieved successfully",
+        "data": {
+          "content": [
+            {
+              "id": "string",
+              "name": "string",
+              "email": "string",
+              "role": "string"
+            }
+          ],
+          "page": {
+            "number": "integer",
+            "size": "integer",
+            "totalElements": "long",
+            "totalPages": "integer"
+          },
+          "filters": {
+            "role": "string (applied filter value)",
+            "status": "string (applied filter value)"
+          }
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "7_emptyCollection": {
+      "description": "Response when collection query returns no results",
+      "httpMethod": "GET",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "No users found",
+        "data": {
+          "content": [],
+          "page": {
+            "number": 0,
+            "size": 10,
+            "totalElements": 0,
+            "totalPages": 0
+          }
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "8_batchOperation": {
+      "description": "Response for batch operations with partial success/failure",
+      "httpMethod": "POST | PUT | DELETE",
+      "statusCode": 200,
+      "example": {
+        "success": true,
+        "status": 200,
+        "message": "Batch operation completed",
+        "data": {
+          "summary": {
+            "total": "integer (total items processed)",
+            "successful": "integer (successfully processed)",
+            "failed": "integer (failed to process)"
+          },
+          "successful": [
+            {
+              "id": "string",
+              "name": "string",
+              "status": "string"
+            }
+          ],
+          "failed": [
+            {
+              "id": "string",
+              "name": "string",
+              "error": "string (error message)"
+            }
+          ]
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "9_asyncOperation": {
+      "description": "Response for asynchronous operations",
+      "httpMethod": "POST",
+      "statusCode": 202,
+      "example": {
+        "success": true,
+        "status": 202,
+        "message": "Export job created successfully",
+        "data": {
+          "jobId": "string (UUID)",
+          "status": "string (PENDING | PROCESSING | COMPLETED | FAILED)",
+          "estimatedTime": "integer (seconds)",
+          "statusUrl": "string (URL to check job status)",
+          "createdAt": "string (ISO 8601)"
+        },
+        "timestamp": "2024-01-10T14:48:00.000Z"
+      }
+    },
+    "10_noContent": {
+      "description": "Response for successful operation with no content to return",
+      "httpMethod": "PUT | PATCH | DELETE",
+      "statusCode": 204,
+      "example": null,
+      "note": "HTTP 204 responses have no body"
+    }
+  },
+  "errorResponses": {
+    "1_validationError": {
+      "description": "Client sent invalid data (field validation failures)",
+      "httpStatus": 400,
+      "errorType": "VALIDATION_ERROR",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "VALIDATION_ERROR",
+          "title": "Validation Failed",
+          "status": 400,
+          "detail": "One or more fields have validation errors",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users",
+          "errors": [
+            {
+              "field": "string (field name)",
+              "message": "string (validation message)",
+              "rejectedValue": "any (the invalid value submitted)",
+              "code": "string (optional validation code)"
+            }
+          ]
+        }
+      }
+    },
+    "2_authenticationError": {
+      "description": "User authentication failed or token is invalid/expired",
+      "httpStatus": 401,
+      "errorType": "AUTHENTICATION_ERROR",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "AUTHENTICATION_ERROR",
+          "title": "Authentication Failed",
+          "status": 401,
+          "detail": "Invalid or expired authentication token",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users/123"
+        }
+      }
+    },
+    "3_authorizationError": {
+      "description": "User lacks permission to access resource",
+      "httpStatus": 403,
+      "errorType": "AUTHORIZATION_ERROR",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "AUTHORIZATION_ERROR",
+          "title": "Access Denied",
+          "status": 403,
+          "detail": "You do not have permission to access this resource",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users/123"
+        }
+      }
+    },
+    "4_resourceNotFound": {
+      "description": "Requested resource does not exist",
+      "httpStatus": 404,
+      "errorType": "RESOURCE_NOT_FOUND",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "RESOURCE_NOT_FOUND",
+          "title": "Resource Not Found",
+          "status": 404,
+          "detail": "User with ID '999' not found",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users/999"
+        }
+      }
+    },
+    "5_methodNotAllowed": {
+      "description": "HTTP method not supported for this endpoint",
+      "httpStatus": 405,
+      "errorType": "METHOD_NOT_ALLOWED",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "METHOD_NOT_ALLOWED",
+          "title": "Method Not Allowed",
+          "status": 405,
+          "detail": "POST method is not supported for this endpoint",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users/123",
+          "allowedMethods": [
+            "GET",
+            "PUT",
+            "DELETE"
+          ]
+        }
+      }
+    },
+    "6_conflictError": {
+      "description": "Resource already exists (duplicate)",
+      "httpStatus": 409,
+      "errorType": "RESOURCE_CONFLICT",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "RESOURCE_CONFLICT",
+          "title": "Resource Already Exists",
+          "status": 409,
+          "detail": "User with email 'john@example.com' already exists",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users",
+          "errors": [
+            {
+              "field": "email",
+              "message": "This email is already registered",
+              "rejectedValue": "john@example.com"
+            }
+          ]
+        }
+      }
+    },
+    "7_businessLogicError": {
+      "description": "Business rule violation",
+      "httpStatus": 422,
+      "errorType": "BUSINESS_LOGIC_ERROR",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "BUSINESS_LOGIC_ERROR",
+          "title": "Business Rule Violation",
+          "status": 422,
+          "detail": "Cannot delete user with active subscriptions",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users/123",
+          "errors": [
+            {
+              "field": "subscriptions",
+              "message": "User has 3 active subscriptions. Cancel them first.",
+              "code": "ACTIVE_SUBSCRIPTIONS_EXIST"
+            }
+          ]
+        }
+      }
+    },
+    "8_rateLimitError": {
+      "description": "Client exceeded rate limit",
+      "httpStatus": 429,
+      "errorType": "RATE_LIMIT_ERROR",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "RATE_LIMIT_ERROR",
+          "title": "Rate Limit Exceeded",
+          "status": 429,
+          "detail": "Too many requests. Please try again later.",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users",
+          "retryAfter": "integer (seconds to wait before retry)"
+        }
+      }
+    },
+    "9_internalServerError": {
+      "description": "Unexpected server error",
+      "httpStatus": 500,
+      "errorType": "INTERNAL_SERVER_ERROR",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "INTERNAL_SERVER_ERROR",
+          "title": "Internal Server Error",
+          "status": 500,
+          "detail": "An unexpected error occurred. Please try again later.",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users/123",
+          "traceId": "string (UUID for debugging)"
+        }
+      },
+      "note": "Never expose internal error details or stack traces in production"
+    },
+    "10_serviceUnavailable": {
+      "description": "Service is temporarily unavailable",
+      "httpStatus": 503,
+      "errorType": "SERVICE_UNAVAILABLE",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "SERVICE_UNAVAILABLE",
+          "title": "Service Unavailable",
+          "status": 503,
+          "detail": "Service is temporarily unavailable. Please try again later.",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users",
+          "retryAfter": "integer (seconds)"
+        }
+      }
+    },
+    "11_badRequest": {
+      "description": "Malformed request or invalid parameters",
+      "httpStatus": 400,
+      "errorType": "BAD_REQUEST",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "BAD_REQUEST",
+          "title": "Bad Request",
+          "status": 400,
+          "detail": "Invalid request parameters",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users"
+        }
+      }
+    },
+    "12_unsupportedMediaType": {
+      "description": "Request Content-Type not supported",
+      "httpStatus": 415,
+      "errorType": "UNSUPPORTED_MEDIA_TYPE",
+      "example": {
+        "success": false,
+        "error": {
+          "type": "UNSUPPORTED_MEDIA_TYPE",
+          "title": "Unsupported Media Type",
+          "status": 415,
+          "detail": "Content-Type 'text/plain' is not supported",
+          "timestamp": "2024-01-10T14:48:00.000Z",
+          "path": "/api/v1/users",
+          "supportedTypes": [
+            "application/json",
+            "application/xml"
+          ]
+        }
+      }
+    }
+  },
+  "errorTypesEnum": {
+    "description": "All possible error type values (use these exactly)",
+    "values": [
+      "BAD_REQUEST",
+      "VALIDATION_ERROR",
+      "AUTHENTICATION_ERROR",
+      "AUTHORIZATION_ERROR",
+      "RESOURCE_NOT_FOUND",
+      "METHOD_NOT_ALLOWED",
+      "RESOURCE_CONFLICT",
+      "BUSINESS_LOGIC_ERROR",
+      "UNSUPPORTED_MEDIA_TYPE",
+      "RATE_LIMIT_ERROR",
+      "INTERNAL_SERVER_ERROR",
+      "SERVICE_UNAVAILABLE",
+      "GATEWAY_TIMEOUT"
+    ]
+  },
+  "httpStatusCodes": {
+    "success": {
+      "200": "OK - Request successful",
+      "201": "Created - Resource created successfully",
+      "202": "Accepted - Request accepted for async processing",
+      "204": "No Content - Successful with no response body"
+    },
+    "clientErrors": {
+      "400": "Bad Request - Invalid request format",
+      "401": "Unauthorized - Authentication required or failed",
+      "403": "Forbidden - User lacks permission",
+      "404": "Not Found - Resource doesn't exist",
+      "405": "Method Not Allowed - HTTP method not supported",
+      "409": "Conflict - Resource conflict (duplicate)",
+      "415": "Unsupported Media Type - Invalid Content-Type",
+      "422": "Unprocessable Entity - Business logic violation",
+      "429": "Too Many Requests - Rate limit exceeded"
+    },
+    "serverErrors": {
+      "500": "Internal Server Error - Unexpected error",
+      "502": "Bad Gateway - Invalid upstream response",
+      "503": "Service Unavailable - Service down",
+      "504": "Gateway Timeout - Upstream timeout"
+    }
+  },
+  "fieldLevelErrorObject": {
+    "description": "Structure for individual field validation errors",
+    "structure": {
+      "field": "string (name of the field with error)",
+      "message": "string (human-readable error message)",
+      "rejectedValue": "any (the invalid value that was submitted)",
+      "code": "string (optional machine-readable error code)"
+    },
+    "example": {
+      "field": "email",
+      "message": "Email must be a valid email address",
+      "rejectedValue": "invalid-email",
+      "code": "Email"
+    }
+  },
+  "paginationObject": {
+    "description": "Standard pagination structure for collections",
+    "structure": {
+      "number": "integer (current page number, 0-indexed)",
+      "size": "integer (number of items per page)",
+      "totalElements": "long (total number of items across all pages)",
+      "totalPages": "integer (total number of pages)"
+    },
+    "example": {
+      "number": 0,
+      "size": 10,
+      "totalElements": 100,
+      "totalPages": 10
+    }
+  },
+  "bestPractices": {
+    "naming": [
+      "Use camelCase for JSON field names",
+      "Use UPPER_SNAKE_CASE for error types",
+      "Use descriptive, self-documenting field names"
+    ],
+    "timestamps": [
+      "Always use ISO 8601 format with UTC timezone",
+      "Format: YYYY-MM-DDTHH:mm:ss.sssZ",
+      "Example: 2024-01-10T14:48:00.000Z"
+    ],
+    "messages": [
+      "Make messages clear and actionable",
+      "Don't expose sensitive internal details",
+      "Use consistent tone across all messages"
+    ],
+    "errors": [
+      "Always include 'success: false' in error responses",
+      "Include HTTP status in both response header and body",
+      "Provide field-level errors for validation failures",
+      "Use traceId only for 500 errors for debugging",
+      "Never expose stack traces in production"
+    ],
+    "pagination": [
+      "Use 0-indexed page numbers",
+      "Default page size: 10 items",
+      "Maximum page size: 100 items",
+      "Always include totalElements and totalPages"
+    ],
+    "versioning": [
+      "Version APIs in URL: /api/v1/resource",
+      "Don't version response structure separately",
+      "Maintain backward compatibility within same version"
+    ]
+  },
+  "responseHeaders": {
+    "description": "Common HTTP headers to include in responses",
+    "required": {
+      "Content-Type": "application/json; charset=UTF-8",
+      "X-Request-ID": "UUID for request tracking",
+      "X-Response-Time": "Response time in milliseconds"
+    },
+    "optional": {
+      "X-RateLimit-Limit": "Rate limit per time window",
+      "X-RateLimit-Remaining": "Remaining requests in window",
+      "X-RateLimit-Reset": "Timestamp when limit resets",
+      "Cache-Control": "Caching directives",
+      "ETag": "Resource version identifier",
+      "Location": "URI of created resource (for 201 responses)"
+    }
+  },
+  "notes": {
+    "general": [
+      "This specification covers both monolith and microservices",
+      "All services must follow this exact structure",
+      "Frontend can rely on 'success' field for quick status check",
+      "All timestamps must be in UTC",
+      "Error responses follow simplified RFC 7807 format"
+    ],
+    "microservices": [
+      "Each microservice must use identical response structure",
+      "API Gateway should not transform response format",
+      "Maintain consistent error types across all services",
+      "Use same field names and data types everywhere"
+    ],
+    "security": [
+      "Never expose sensitive data in error messages",
+      "Don't reveal system architecture in errors",
+      "Log detailed errors server-side only",
+      "Use generic messages for authentication failures"
+    ]
+  }
+}

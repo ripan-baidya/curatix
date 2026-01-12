@@ -1,0 +1,41 @@
+{
+  "title": "About",
+  "description": "about section",
+  "version": "1.0.0",
+  "base_path": "/api/v1/about",
+  "endpoints": {
+    "getAboutInfo": {
+      "method": "GET",
+      "path": "",
+      "description": "Get about information of app",
+      "response": {
+        "200": {
+          "success": true,
+          "msg": "App information retrieved successfully",
+          "body": {
+            "name": "Curatix",
+            "version": "1.0.0",
+            "copyright": "© 2026 Curatix. All rights reserved",
+            "licence": {
+              "name": "MIT",
+              "url": "https://github.com/ripan-baidya/curatix/tree/main?tab=MIT-1-ov-file"
+            },
+            "socials": {
+              "github": "https://github.com/ripan-baidya/curatix",
+              "twitter": "https://twitter.com/curatix",
+              "instagram": "https://instagram.com/curatix"
+            },
+            "support": {
+              "email": "support@curatix.com",
+              "working-hours": "Mon-Fri: 9 AM - 6 PM"
+            },
+            "developer": {
+              "name": "Ripan Baidya",
+              "email": "official.ripanbaidya@gmail.com"
+            }
+          }
+        }
+      }
+    }
+  }
+}

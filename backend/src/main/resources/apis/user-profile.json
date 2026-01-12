@@ -1,0 +1,102 @@
+{
+  "title": "User Profile",
+  "description": "Manage user profile",
+  "version": "1.0.0",
+  "base_path": "/api/v1/profile",
+  "authentication": {
+    "type": "Bearer token",
+    "in": "header",
+    "name": "Authorization",
+    "required": true
+  },
+  "endpoints": {
+    "getProfile": {
+      "method": "GET",
+      "path": "/me",
+      "description": "get user profile",
+      "response": {
+        "200": {
+          "body": {
+            "id": "",
+            "name": "john",
+            "email": "john@example.com",
+            "role": "user",
+            "profile_url": "<cloudinary-image-url>"
+          }
+        }
+      }
+    },
+    "uploadProfilePicture": {
+      "method": "POST",
+      "path": "/upload-picture",
+      "description": "upload or update user's profile picture",
+      "request": {
+        "contentType": "multipart/form-data",
+        "formData": {
+          "profile_picture": {
+            "type": "file",
+            "required": true,
+            "constraints": {
+              "maxFileSize": "1MB",
+              "allowedTypes": [
+                "image/jpeg",
+                "image/png",
+                "image/jpg"
+              ]
+            }
+          }
+        }
+      },
+      "response": {
+        "success": true,
+        "msg": "Profile picture uploaded successfully",
+        "data": {
+          "profile_url": "<cloudinary-image-url>",
+          "public_id": "<cloudinary-public-id>",
+          "uploaded_at": "<timestamp>"
+        }
+      },
+      "errors": [
+        {
+          "status": "ERROR",
+          "errorCode": "INVALID_FILE_TYPE",
+          "message": "Only JPG, PNG, and WEBP images are allowed"
+        },
+        {
+          "status": "ERROR",
+          "errorCode": "FILE_TOO_LARGE",
+          "message": "Profile picture must not exceed 5MB"
+        },
+        {
+          "status": "ERROR",
+          "errorCode": "UNAUTHORIZED",
+          "message": "Authentication required"
+        }
+      ]
+    },
+    "deleteProfilePicture": {
+      "method": "DELETE",
+      "path": "/delete-picture",
+      "description": "Delete profile picture",
+      "response": {
+        "success": true,
+        "msg": "Profile picture deleted successfully",
+        "body": {
+          "deleted_at": "<timestamp>"
+        }
+      }
+    },
+    "errors": [
+      {
+        "status": "ERROR",
+        "errorCode": "UNAUTHORIZED",
+        "message": "Authentication required"
+      },
+      {
+        "status": "ERROR",
+        "errorCode": "NOT_FOUND",
+        "message": "Profile picture not found"
+      }
+    ]
+  }
+}

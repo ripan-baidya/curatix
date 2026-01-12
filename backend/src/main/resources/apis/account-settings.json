@@ -1,0 +1,149 @@
+{
+  "title": "account-settings",
+  "description": "Manage account specific operations",
+  "version": "1.0.0",
+  "base_path": "/api/v1/account-settings",
+  "endpoints": {
+    "verify_email": {
+      "method": "POST",
+      "path": "/verify-email",
+      "description": "Verify email account",
+      "body": {
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "required": true
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "body": {
+              "message": "Email verification link sent successfully"
+            }
+          }
+        }
+      }
+    },
+    "confirm_email_verification": {
+      "method": "GET",
+      "path": "/verify-email/confirm?token=<token>",
+      "description": "Confirm email verification",
+      "response": {
+        "200": {
+          "body": {
+            "message": "Email verification successful"
+          }
+        }
+      }
+    },
+    "update_email": {
+      "method": "PATCH",
+      "path": "/update-email",
+      "description": "Update user email",
+      "body": {
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "password": {
+              "type": "string",
+              "format": "password",
+              "required": true,
+              "description": "current password of the user"
+            },
+            "new_email": {
+              "type": "string",
+              "format": "email",
+              "required": true
+            },
+            "confirm_new_email": {
+              "type": "string",
+              "format": "email",
+              "required": true,
+              "description": "write the exact same email as new email to confirm"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "description": "Email updated successfully",
+            "body": {
+              "message": "Email updated successfully"
+            }
+          }
+        }
+      }
+    },
+    "update_password": {
+      "method": "PATCH",
+      "path": "/update-password",
+      "description": "Update user password",
+      "body": {
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "password": {
+              "type": "string",
+              "format": "password",
+              "required": true,
+              "description": "current password of the user"
+            },
+            "new_password": {
+              "type": "string",
+              "format": "password",
+              "required": true
+            },
+            "confirm_new_password": {
+              "type": "string",
+              "format": "password",
+              "required": true,
+              "description": "write the exact same password as new password to confirm"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "description": "Password updated successfully",
+            "body": {
+              "message": "Password updated successfully"
+            }
+          }
+        }
+      }
+    },
+    "delete_account": {
+      "method": "POST",
+      "path": "/delete-account",
+      "description": "Permanently delete the user account",
+      "body": {
+        "request": {
+          "contentType": "application/json",
+          "body": {
+            "password": {
+              "type": "string",
+              "format": "password",
+              "required": true,
+              "description": "current password of the user"
+            },
+            "feedback": {
+              "type": "string",
+              "format": "text",
+              "required": true,
+              "description": "feedback from the user"
+            }
+          }
+        },
+        "response": {
+          "200": {
+            "body": {
+              "message": "Account deleted successfully"
+            }
+          }
+        }
+      }
+    }
+  }
+}
