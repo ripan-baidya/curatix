@@ -82,7 +82,7 @@ spring:
       file-size-threshold: ${FILE_SIZE_THRESHOLD:1MB}
 # Server
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:8000}
   servlet:
     context-path: /api/${API_VERSION:v1}
     session:
@@ -90,12 +90,15 @@ server:
   compression:
     enabled: true # Enablish GZIP compression
   error:
+    whitelabel:
+      enabled: false
     # Do not expose internal exception messages
     include-message: never
     # Do not expose validation error details
     # Use "on_param" only for debugging or internal APIs
     include-binding-errors: never
     include-stacktrace: never
+    include-exception: false
   tomcat:
     # Max time server waits for a client connection (in ms)
     connection-timeout: 20000 # 20s
@@ -121,25 +124,27 @@ logging:
 # OpenAPI/ Swagger doc
 springdoc:
   api-docs:
-    enabled: ${SWAGGER_ENABLED:true}
     path: /api-docs
+    enabled: ${SWAGGER_ENABLED:true}
   swagger-ui:
-    enabled: ${SWAGGER_UI_ENABLED:true}
     path: /swagger-ui.html
-    # Prevent loading default petstore example
-    disable-swagger-default-url: true
-    # Shows API execution time in the UI
-    display-request-duration: true
-    # Sort APIs by HTTP method (GET, POST, PUT...)
-    operations-sorter: method
-    # Sort tags alphabetically
-    tags-sorter: alpha
-    # Collapse all endpoints by default
-    doc-expansion: none
-    # Expose actuator endpoints in Swagger
-    show-actuator: true
+    enabled: ${SWAGGER_UI_ENABLED:true}
+    disable-swagger-default-url: true # Prevent loading default prestore example
+    display-request-duration: true # Shows API execution time(ms) in the UI
+    operations-sorter: alpha # Sort APIs alphabetically
+    tags-sorter: alpha # Sort tags alphabetically
+    doc-expansion: none # Collapse all endpoints by default
+    filter: true # Enable search bar to filter endpoints
+    show-actuator: false # Actuator visibility
     default-consumes-media-type: application/json
     default-produces-media-type: application/json
+    group-configs:
+      - group: public
+        paths-to-match: /api/v1/**
+        display-name: Public
+      - group: admin
+        paths-to-match: /api/admin/**
+        display-name: Admin
 
 # Actuator (Health check)
 management:
@@ -168,6 +173,7 @@ management:
 app:
   name: ${APPLICATION_NAME:curatix}
   version: ${APPLICATION_VERSION:1.0.0}
+  logo: src/main/resources/static/images/temporary-swagger-logo.png
   build-number: ${APPLICATION_BUILD_NUMBER:1.0.0}
   copyright: ${APPLICATION_COPYRIGHT:© 2026 Curatix. All rights reserved}
   license:
@@ -177,8 +183,13 @@ app:
     email: ${SUPPORT_EMAIL:support@curatix.com}
     working-hours: "${Mon-Fri: 9 AM - 6 PM}"
   socials:
+    github: ${SOCIAL_GITHUB:https://github.com/ripan-baidya/curatix}
     twitter: ${SOCIAL_TWITTER:https://twitter.com/curatix}
     instagram: ${SOCIAL_INSTAGRAM:https://instagram.com/curatix}
+  developer:
+    name: ${DEVELOPER_NAME:Ripan Baidya}
+    email: ${DEVELOPER_EMAIL:official.ripanbaidya@gmail.com}
+
 
   # API
   api:
