@@ -9,7 +9,7 @@ desktop.ini
 *.iws
 *.ipr
 .vscode/
-*.code-workspace
+#*.code-workspace
 
 # Logs (global)
 logs/
