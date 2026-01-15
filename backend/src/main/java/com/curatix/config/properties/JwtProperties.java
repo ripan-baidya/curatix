@@ -13,6 +13,7 @@ import java.time.Duration;
  * @param header       header where the token is stored
  * @param prefix       prefix in the header for the token
  * @param accessToken  access token properties
+ * @param refreshToken refresh token properties
  * @param password     password properties
  */
 @ConfigurationProperties(prefix = "security.jwt")
@@ -23,10 +24,11 @@ public record JwtProperties(
         String header,
         String prefix,
         AccessToken accessToken,
+        RefreshToken refreshToken,
         Password password
 ) {
     public record AccessToken(
-            long expiration
+            Duration expiration
     ) {
     }
 
