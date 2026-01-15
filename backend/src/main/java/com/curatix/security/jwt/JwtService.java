@@ -93,6 +93,16 @@ public class JwtService {
     /* Token Validation */
 
     /**
+     * Validates JWT token (strict validation with exceptions).
+     *
+     * @param token JWT token (with or without Bearer prefix)
+     * @throws JwtAuthenticationException if token is invalid/expired
+     */
+    public void validateToken(String token) {
+        extractClaims(token);
+    }
+
+    /**
      * Validate JWT token
      */
     public boolean isTokenValid(String token) {
@@ -113,15 +123,17 @@ public class JwtService {
             return true;
         } catch (ExpiredJwtException e) {
             log.warn("JWT expired: {}. Suggested action: Trigger Refresh Token flow.", e.getMessage());
+            return false;
         } catch (SignatureException e) {
             log.error("CRITICAL: JWT signature mismatch. Possible tampering attempt!");
+            return false;
         } catch (MalformedJwtException | UnsupportedJwtException e) {
             log.error("Invalid JWT structure: {}", e.getMessage());
+            return false;
         } catch (Exception e) {
             log.error("JWT validation failed for unknown reason: {}", e.getMessage());
+            return  false;
         }
-
-        return false;
     }
 
     /**
@@ -144,7 +156,7 @@ public class JwtService {
     /**
      * Extract user ID from token
      */
-    public UUID extractUserId(String token) {
+    public String extractUserId(String token) {
         Claims claims = extractClaims(token);
         final String userId = claims.get(CLAIM_USER_ID, String.class);
 
@@ -156,14 +168,7 @@ public class JwtService {
 
         }
 
-        try {
-            return UUID.fromString(userId);
-        } catch (IllegalArgumentException e) {
-            log.error("Corrupted UUID in token claim: {}", userId);
-            throw new InvalidJwtSecretException(
-                    ErrorCode.TOKEN_INVALID, "User identity format is corrupt"
-            );
-        }
+        return  userId;
     }
 
     /**
