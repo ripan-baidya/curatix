@@ -1,19 +1,17 @@
 package com.curatix.api.dto.response;
 
-import com.curatix.api.dto.request.TestRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Test API response
+ * Test API response dto
  */
 @Schema(description = "Test API response")
 public record TestResponse(
+        String id,
         String name,
-        String msg,
-        Integer age,
         String email
 ) {
-    public static TestResponse of(TestRequest request) {
-        return new TestResponse(request.name(), request.msg(), request.age(), request.email());
+    public static TestResponse of(String id, String name, String email) {
+        return new TestResponse(id, name, email);
     }
 }
