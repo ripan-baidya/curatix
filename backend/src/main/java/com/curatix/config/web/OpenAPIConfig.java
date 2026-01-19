@@ -121,11 +121,12 @@ public class OpenAPIConfig {
      */
     private List<Tag> createApiTags(boolean isDevelopment) {
         List<Tag> tags = List.of(
-                createTag("Users", "User Management", "User account data and profile management.", true),
-                createTag("Authentication", "Authentication", "User authentication and authorization endpoints.", true),
-                createTag("Admin", "Administration", "Administrative endpoints. Require admin permissions.", false),
-                createTag("Configuration", "Server Configuration", "Server configuration and settings.", true),
-                createTag("Public", "Public", "Public endpoints that don't require authentication.", true)
+                createTag("test", "Test", "Test endpoints.", true),
+                createTag("users", "User Management", "User account data and profile management.", true),
+                createTag("authentication", "Authentication", "User authentication and authorization endpoints.", true),
+                createTag("admin", "Administration", "Administrative endpoints. Require admin permissions.", false),
+                createTag("configuration", "Server Configuration", "Server configuration and settings.", true),
+                createTag("public", "Public", "Public endpoints that don't require authentication.", true)
         );
 
         // Add development tag only for non-production
