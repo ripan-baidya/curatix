@@ -8,7 +8,7 @@ import lombok.Getter;
  * errors when user exceeds API limits.
  */
 @Getter
-class RateLimitException extends CuratixException {
+public class RateLimitException extends CuratixException {
 
     private final Integer retryAfter;
 

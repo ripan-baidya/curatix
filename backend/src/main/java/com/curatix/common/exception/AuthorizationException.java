@@ -6,7 +6,7 @@ import com.curatix.common.constant.ErrorCode;
  * Exception for authorization failures, Use for {@code 403} errors
  * (insufficient permissions, access denied)
  */
-class AuthorizationException extends CuratixException {
+public class AuthorizationException extends CuratixException {
 
     public AuthorizationException(ErrorCode errorCode) {
         super(errorCode);

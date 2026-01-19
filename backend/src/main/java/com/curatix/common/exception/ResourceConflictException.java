@@ -11,7 +11,7 @@ import java.util.List;
  * errors when resource already exists.
  */
 @Getter
-class ResourceConflictException extends CuratixException {
+public class ResourceConflictException extends CuratixException {
 
     private final List<FieldError> fieldErrors;
 

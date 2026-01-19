@@ -11,7 +11,7 @@ import java.util.List;
  * business rules {@code (422)}.
  */
 @Getter
-class BusinessLogicException extends CuratixException {
+public class BusinessLogicException extends CuratixException {
 
     private final List<FieldError> fieldErrors;
 
