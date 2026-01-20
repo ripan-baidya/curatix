@@ -1,12 +1,16 @@
 package com.curatix.security.exception;
 
 import com.curatix.common.constant.ErrorCode;
-import com.curatix.common.exception.AuthenticationException;
+import com.curatix.common.exception.InfrastructureException;
 
 /**
- * This exception occurs when the provided secret key is Invalid.
+ * This exception is thrown when the JWT secret configuration
+ * is invalid.
+ * <p>This exception is deprecated and should be removed when
+ * the migration to RSA is complete.
  */
-public class InvalidJwtSecretException extends AuthenticationException {
+@Deprecated(since = "1.0", forRemoval = true)
+public class InvalidJwtSecretException extends InfrastructureException {
 
     public InvalidJwtSecretException(ErrorCode errorCode) {
         super(errorCode);
@@ -14,5 +18,9 @@ public class InvalidJwtSecretException extends AuthenticationException {
 
     public InvalidJwtSecretException(ErrorCode errorCode, String errorMessage) {
         super(errorCode, errorMessage);
+    }
+
+    public InvalidJwtSecretException(ErrorCode errorCode, String message, Throwable cause) {
+        super(errorCode, message, cause);
     }
 }
