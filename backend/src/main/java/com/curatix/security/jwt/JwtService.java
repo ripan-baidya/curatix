@@ -2,24 +2,21 @@ package com.curatix.security.jwt;
 
 import com.curatix.common.constant.ErrorCode;
 import com.curatix.config.properties.JwtProperties;
-import com.curatix.security.exception.InvalidJwtSecretException;
 import com.curatix.security.exception.JwtAuthenticationException;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -34,36 +31,38 @@ public class JwtService {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtProperties jwtProperties;
-    private SecretKey secretKey;
+    private final ResourceLoader resourceLoader;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
+
 
     /**
      * Initialize the Secret Key
      */
     @PostConstruct
     private void initSecretKey() {
-        log.info("Initializing Secret key for the System.");
+        log.info("Initializing RSA key pair for JWT authentication");
 
-        String secretKey = jwtProperties.secret();
-        if (StringUtils.isBlank(secretKey)) {
-            log.warn("Secret key is blank");
-            throw new InvalidJwtSecretException(ErrorCode.INVALID_SECRET_KEY);
-        }
-
-        byte[] secretBytes;
         try {
-            secretBytes = Decoders.BASE64.decode(secretKey);
-        } catch (IllegalArgumentException ex) {
-            throw new InvalidJwtSecretException(ErrorCode.INVALID_SECRET_KEY);
-        }
+            // Load private key
+            String privateKeyPath = jwtProperties.rsa().privateKeyPath();
+            if (StringUtils.isBlank(privateKeyPath)) {
+                throw new IllegalArgumentException("Private key path not configured");
+            }
+            this.privateKey = KeyUtils.loadPrivateKey(privateKeyPath, resourceLoader);
 
-        if (secretBytes.length < jwtProperties.secretLength()) {
-            String errorMessage = "JWT secret is not configured or too short. Minimum required: 64 bytes for HS512";
-            log.warn(errorMessage);
-            throw new InvalidJwtSecretException(ErrorCode.INVALID_SECRET_KEY, errorMessage);
-        }
+            // Load public key
+            String publicKeyPath = jwtProperties.rsa().publicKeyPath();
+            if (StringUtils.isBlank(publicKeyPath)) {
+                throw new IllegalArgumentException("Public key path not configured");
+            }
+            this.publicKey = KeyUtils.loadPublicKey(publicKeyPath, resourceLoader);
 
-        this.secretKey = Keys.hmacShaKeyFor(secretBytes);
-        log.info("Secret key configured successfully.");
+            log.info("RSA key pair initialized successfully");
+        } catch (Exception ex) {
+            log.error("Failed to initialize RSA keys: {}", ex.getMessage(), ex);
+            throw new IllegalStateException("JWT Service initialization failed", ex);
+        }
     }
 
     /* Token Generation */
@@ -71,7 +70,7 @@ public class JwtService {
     /**
      * Generate JWT Access token
      */
-    public String generateAccessToken(UUID id, String email) {
+    public String generateAccessToken(String id, String email) {
         Map<String, Object> claims = Map.of(
                 CLAIM_USER_ID, id,
                 CLAIM_TOKEN_TYPE, TOKEN_TYPE_ACCESS
@@ -82,7 +81,7 @@ public class JwtService {
     /**
      * Generate JWT Refresh token
      */
-    public String generateRefreshToken(UUID id, String email) {
+    public String generateRefreshToken(String id, String email) {
         Map<String, Object> claims = Map.of(
                 CLAIM_USER_ID, id,
                 CLAIM_TOKEN_TYPE, TOKEN_TYPE_REFRESH
@@ -114,7 +113,8 @@ public class JwtService {
 
         try {
             Jwts.parser()
-                    .verifyWith(secretKey)
+                    // .verifyWith(secretKey)
+                    .verifyWith(publicKey)
                     .requireIssuer(jwtProperties.issuer())
                     .clockSkewSeconds(60) // Allow 60s for server clock differences
                     .build()
@@ -132,7 +132,7 @@ public class JwtService {
             return false;
         } catch (Exception e) {
             log.error("JWT validation failed for unknown reason: {}", e.getMessage());
-            return  false;
+            return false;
         }
     }
 
@@ -168,7 +168,7 @@ public class JwtService {
 
         }
 
-        return  userId;
+        return userId;
     }
 
     /**
@@ -204,11 +204,11 @@ public class JwtService {
      * @param type token type for which we want to get the expiration
      */
     private long getExpirationInSeconds(String type) {
-        if (Objects.equals(type, TOKEN_TYPE_ACCESS)) {
-            return jwtProperties.accessToken().expiration().getSeconds();
-        } else {
-            return jwtProperties.refreshToken().expiration().getSeconds();
-        }
+        return switch (type) {
+            case TOKEN_TYPE_ACCESS -> jwtProperties.accessToken().expiration().getSeconds();
+            case TOKEN_TYPE_REFRESH -> jwtProperties.refreshToken().expiration().getSeconds();
+            default -> throw new IllegalArgumentException("Invalid token type: " + type);
+        };
     }
 
     /**
@@ -224,7 +224,8 @@ public class JwtService {
                 .subject(email)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expAt))
-                .signWith(secretKey, Jwts.SIG.HS512)
+                // .signWith(secretKey, Jwts.SIG.HS512)
+                .signWith(privateKey, Jwts.SIG.RS512)
                 .compact();
     }
 
@@ -235,7 +236,7 @@ public class JwtService {
         try {
             String jwt = stripBearerPrefix(token);
             return Jwts.parser()
-                    .verifyWith(secretKey)
+                    .verifyWith(publicKey)
                     .requireIssuer(jwtProperties.issuer())
                     .clockSkewSeconds(60) // Allow 60s for server clock differences
                     .build()
