@@ -1,0 +1,1855 @@
+{
+  "api_documentation": {
+    "base_url": "https://api.yourapp.com/v1",
+    "authentication": "Bearer Token (JWT)",
+
+    "endpoints": {
+      "1_authentication": {
+        "register": {
+          "method": "POST",
+          "endpoint": "/auth/register",
+          "description": "Register a new user",
+          "request": {
+            "email": "user@example.com",
+            "password": "securePassword123",
+            "full_name": "John Doe",
+            "phone": "+1234567890"
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "user_id": "usr_123456789",
+              "email": "user@example.com",
+              "full_name": "John Doe",
+              "is_onboarded": false,
+              "created_at": "2026-01-26T10:30:00Z"
+            },
+            "token": {
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "expires_in": 3600
+            }
+          },
+          "response_error": {
+            "status": 400,
+            "error": {
+              "code": "EMAIL_ALREADY_EXISTS",
+              "message": "This email is already registered"
+            }
+          }
+        },
+
+        "login": {
+          "method": "POST",
+          "endpoint": "/auth/login",
+          "description": "Login existing user",
+          "request": {
+            "email": "user@example.com",
+            "password": "securePassword123"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "user_id": "usr_123456789",
+              "email": "user@example.com",
+              "full_name": "John Doe",
+              "is_onboarded": true,
+              "profile_complete": true
+            },
+            "token": {
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "expires_in": 3600
+            }
+          },
+          "response_error": {
+            "status": 401,
+            "error": {
+              "code": "INVALID_CREDENTIALS",
+              "message": "Invalid email or password"
+            }
+          }
+        },
+
+        "refresh_token": {
+          "method": "POST",
+          "endpoint": "/auth/refresh",
+          "description": "Refresh access token",
+          "request": {
+            "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "response_success": {
+            "status": 200,
+            "token": {
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "expires_in": 3600
+            }
+          }
+        },
+
+        "logout": {
+          "method": "POST",
+          "endpoint": "/auth/logout",
+          "description": "Logout user and invalidate tokens",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {},
+          "response_success": {
+            "status": 200,
+            "message": "Successfully logged out"
+          }
+        }
+      },
+
+      "2_onboarding": {
+        "submit_onboarding": {
+          "method": "POST",
+          "endpoint": "/onboarding/complete",
+          "description": "Submit user's financial goals and onboarding data",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "financial_goals": [
+              {
+                "goal_type": "SAVINGS",
+                "goal_name": "Emergency Fund",
+                "target_amount": 10000,
+                "current_amount": 2000,
+                "target_date": "2026-12-31",
+                "priority": "HIGH"
+              },
+              {
+                "goal_type": "DEBT_PAYOFF",
+                "goal_name": "Credit Card Debt",
+                "target_amount": 5000,
+                "current_amount": 5000,
+                "target_date": "2026-06-30",
+                "priority": "MEDIUM"
+              }
+            ],
+            "monthly_income": 5000,
+            "currency": "USD",
+            "occupation": "Software Engineer",
+            "age_range": "25-34",
+            "risk_tolerance": "MODERATE",
+            "spending_categories": [
+              "HOUSING",
+              "FOOD",
+              "TRANSPORTATION",
+              "ENTERTAINMENT",
+              "UTILITIES",
+              "HEALTHCARE"
+            ],
+            "budget_preferences": {
+              "housing": 1500,
+              "food": 600,
+              "transportation": 400,
+              "entertainment": 300,
+              "utilities": 200,
+              "savings": 1000,
+              "other": 1000
+            }
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "user_id": "usr_123456789",
+              "is_onboarded": true,
+              "profile_id": "prof_987654321",
+              "onboarding_completed_at": "2026-01-26T10:35:00Z",
+              "message": "Onboarding completed successfully"
+            }
+          }
+        },
+
+        "get_onboarding_status": {
+          "method": "GET",
+          "endpoint": "/onboarding/status",
+          "description": "Check if user has completed onboarding",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "is_onboarded": true,
+              "profile_complete": true,
+              "onboarding_completed_at": "2026-01-26T10:35:00Z"
+            }
+          }
+        }
+      },
+
+      "3_user_profile": {
+        "get_profile": {
+          "method": "GET",
+          "endpoint": "/profile",
+          "description": "Get user's complete profile",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "user_id": "usr_123456789",
+              "email": "user@example.com",
+              "full_name": "John Doe",
+              "phone": "+1234567890",
+              "monthly_income": 5000,
+              "currency": "USD",
+              "occupation": "Software Engineer",
+              "age_range": "25-34",
+              "risk_tolerance": "MODERATE",
+              "financial_goals": [
+                {
+                  "goal_id": "goal_111",
+                  "goal_type": "SAVINGS",
+                  "goal_name": "Emergency Fund",
+                  "target_amount": 10000,
+                  "current_amount": 2500,
+                  "target_date": "2026-12-31",
+                  "priority": "HIGH",
+                  "progress_percentage": 25
+                }
+              ],
+              "budget_preferences": {
+                "housing": 1500,
+                "food": 600,
+                "transportation": 400,
+                "entertainment": 300,
+                "utilities": 200,
+                "savings": 1000,
+                "other": 1000
+              }
+            }
+          }
+        },
+
+        "update_profile": {
+          "method": "PUT",
+          "endpoint": "/profile",
+          "description": "Update user profile information",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "full_name": "John Michael Doe",
+            "monthly_income": 5500,
+            "occupation": "Senior Software Engineer"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "user_id": "usr_123456789",
+              "updated_fields": ["full_name", "monthly_income", "occupation"],
+              "updated_at": "2026-01-26T11:00:00Z"
+            }
+          }
+        }
+      },
+
+      "4_expenses": {
+        "create_expense": {
+          "method": "POST",
+          "endpoint": "/expenses",
+          "description": "Create a new expense entry",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "amount": 45.5,
+            "category": "FOOD",
+            "subcategory": "Groceries",
+            "description": "Weekly groceries from Walmart",
+            "date": "2026-01-26",
+            "payment_method": "CREDIT_CARD",
+            "merchant": "Walmart",
+            "tags": ["groceries", "weekly"],
+            "is_recurring": false
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "expense_id": "exp_555666777",
+              "user_id": "usr_123456789",
+              "amount": 45.5,
+              "category": "FOOD",
+              "subcategory": "Groceries",
+              "description": "Weekly groceries from Walmart",
+              "date": "2026-01-26",
+              "payment_method": "CREDIT_CARD",
+              "merchant": "Walmart",
+              "tags": ["groceries", "weekly"],
+              "created_at": "2026-01-26T14:30:00Z"
+            }
+          }
+        },
+
+        "get_expenses": {
+          "method": "GET",
+          "endpoint": "/expenses",
+          "description": "Get list of expenses with filters",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "start_date": "2026-01-01",
+            "end_date": "2026-01-31",
+            "category": "FOOD",
+            "limit": 50,
+            "offset": 0,
+            "sort": "date_desc"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "expenses": [
+                {
+                  "expense_id": "exp_555666777",
+                  "amount": 45.5,
+                  "category": "FOOD",
+                  "subcategory": "Groceries",
+                  "description": "Weekly groceries from Walmart",
+                  "date": "2026-01-26",
+                  "payment_method": "CREDIT_CARD",
+                  "merchant": "Walmart",
+                  "tags": ["groceries", "weekly"],
+                  "created_at": "2026-01-26T14:30:00Z"
+                }
+              ],
+              "pagination": {
+                "total": 125,
+                "limit": 50,
+                "offset": 0,
+                "has_more": true
+              },
+              "summary": {
+                "total_amount": 2345.67,
+                "count": 125,
+                "period": "2026-01-01 to 2026-01-31"
+              }
+            }
+          }
+        },
+
+        "get_expense_by_id": {
+          "method": "GET",
+          "endpoint": "/expenses/{expense_id}",
+          "description": "Get a specific expense",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "expense_id": "exp_555666777",
+              "amount": 45.5,
+              "category": "FOOD",
+              "subcategory": "Groceries",
+              "description": "Weekly groceries from Walmart",
+              "date": "2026-01-26",
+              "payment_method": "CREDIT_CARD",
+              "merchant": "Walmart",
+              "tags": ["groceries", "weekly"],
+              "created_at": "2026-01-26T14:30:00Z",
+              "updated_at": "2026-01-26T14:30:00Z"
+            }
+          }
+        },
+
+        "update_expense": {
+          "method": "PUT",
+          "endpoint": "/expenses/{expense_id}",
+          "description": "Update an existing expense",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "amount": 50.0,
+            "description": "Weekly groceries from Walmart - Updated"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "expense_id": "exp_555666777",
+              "amount": 50.0,
+              "category": "FOOD",
+              "subcategory": "Groceries",
+              "description": "Weekly groceries from Walmart - Updated",
+              "date": "2026-01-26",
+              "updated_at": "2026-01-26T15:00:00Z"
+            }
+          }
+        },
+
+        "delete_expense": {
+          "method": "DELETE",
+          "endpoint": "/expenses/{expense_id}",
+          "description": "Delete an expense",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "expense_id": "exp_555666777",
+              "deleted": true,
+              "deleted_at": "2026-01-26T15:10:00Z"
+            }
+          }
+        }
+      },
+
+      "5_income": {
+        "create_income": {
+          "method": "POST",
+          "endpoint": "/income",
+          "description": "Record income entry",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "amount": 5000,
+            "source": "SALARY",
+            "description": "Monthly salary - January",
+            "date": "2026-01-25",
+            "is_recurring": true,
+            "recurrence_frequency": "MONTHLY"
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "income_id": "inc_888999000",
+              "amount": 5000,
+              "source": "SALARY",
+              "description": "Monthly salary - January",
+              "date": "2026-01-25",
+              "is_recurring": true,
+              "recurrence_frequency": "MONTHLY",
+              "created_at": "2026-01-26T10:00:00Z"
+            }
+          }
+        },
+
+        "get_income": {
+          "method": "GET",
+          "endpoint": "/income",
+          "description": "Get income records",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "start_date": "2026-01-01",
+            "end_date": "2026-01-31"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "income_records": [
+                {
+                  "income_id": "inc_888999000",
+                  "amount": 5000,
+                  "source": "SALARY",
+                  "description": "Monthly salary - January",
+                  "date": "2026-01-25",
+                  "is_recurring": true
+                }
+              ],
+              "summary": {
+                "total_income": 5000,
+                "count": 1,
+                "period": "2026-01-01 to 2026-01-31"
+              }
+            }
+          }
+        }
+      },
+
+      "6_categories": {
+        "get_categories": {
+          "method": "GET",
+          "endpoint": "/categories",
+          "description": "Get all expense categories",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "categories": [
+                {
+                  "category_id": "cat_001",
+                  "name": "FOOD",
+                  "display_name": "Food & Dining",
+                  "icon": "🍔",
+                  "subcategories": [
+                    "Groceries",
+                    "Restaurants",
+                    "Fast Food",
+                    "Coffee Shops"
+                  ]
+                },
+                {
+                  "category_id": "cat_002",
+                  "name": "HOUSING",
+                  "display_name": "Housing",
+                  "icon": "🏠",
+                  "subcategories": [
+                    "Rent",
+                    "Mortgage",
+                    "Property Tax",
+                    "Home Insurance",
+                    "Repairs"
+                  ]
+                },
+                {
+                  "category_id": "cat_003",
+                  "name": "TRANSPORTATION",
+                  "display_name": "Transportation",
+                  "icon": "🚗",
+                  "subcategories": [
+                    "Gas",
+                    "Car Payment",
+                    "Insurance",
+                    "Maintenance",
+                    "Public Transit"
+                  ]
+                },
+                {
+                  "category_id": "cat_004",
+                  "name": "UTILITIES",
+                  "display_name": "Utilities",
+                  "icon": "💡",
+                  "subcategories": [
+                    "Electricity",
+                    "Water",
+                    "Gas",
+                    "Internet",
+                    "Phone"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+
+      "7_analytics": {
+        "get_spending_summary": {
+          "method": "GET",
+          "endpoint": "/analytics/spending-summary",
+          "description": "Get spending analytics and summary",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "period": "MONTH",
+            "start_date": "2026-01-01",
+            "end_date": "2026-01-31"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "period": {
+                "start_date": "2026-01-01",
+                "end_date": "2026-01-31",
+                "period_type": "MONTH"
+              },
+              "total_income": 5000,
+              "total_expenses": 3245.67,
+              "net_savings": 1754.33,
+              "savings_rate": 35.09,
+              "by_category": [
+                {
+                  "category": "HOUSING",
+                  "amount": 1500,
+                  "percentage": 46.23,
+                  "budget": 1500,
+                  "budget_status": "ON_TRACK"
+                },
+                {
+                  "category": "FOOD",
+                  "amount": 645.5,
+                  "percentage": 19.89,
+                  "budget": 600,
+                  "budget_status": "OVER_BUDGET"
+                },
+                {
+                  "category": "TRANSPORTATION",
+                  "amount": 380,
+                  "percentage": 11.71,
+                  "budget": 400,
+                  "budget_status": "UNDER_BUDGET"
+                }
+              ],
+              "top_expenses": [
+                {
+                  "expense_id": "exp_111",
+                  "amount": 1500,
+                  "category": "HOUSING",
+                  "description": "Rent - January",
+                  "date": "2026-01-01"
+                }
+              ],
+              "trends": {
+                "vs_last_month": {
+                  "change_amount": -154.33,
+                  "change_percentage": -4.54,
+                  "direction": "DOWN"
+                }
+              }
+            }
+          }
+        },
+
+        "get_category_trends": {
+          "method": "GET",
+          "endpoint": "/analytics/category-trends",
+          "description": "Get spending trends by category over time",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "category": "FOOD",
+            "months": 6
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "category": "FOOD",
+              "trends": [
+                {
+                  "month": "2025-08",
+                  "amount": 520.34,
+                  "transaction_count": 28
+                },
+                {
+                  "month": "2025-09",
+                  "amount": 578.9,
+                  "transaction_count": 32
+                },
+                {
+                  "month": "2026-01",
+                  "amount": 645.5,
+                  "transaction_count": 35
+                }
+              ],
+              "average": 581.58,
+              "trend_direction": "INCREASING"
+            }
+          }
+        }
+      },
+
+      "8_goals": {
+        "create_goal": {
+          "method": "POST",
+          "endpoint": "/goals",
+          "description": "Create a new financial goal",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "goal_type": "SAVINGS",
+            "goal_name": "Vacation Fund",
+            "target_amount": 5000,
+            "current_amount": 0,
+            "target_date": "2026-07-01",
+            "priority": "MEDIUM"
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "goal_id": "goal_222",
+              "goal_type": "SAVINGS",
+              "goal_name": "Vacation Fund",
+              "target_amount": 5000,
+              "current_amount": 0,
+              "target_date": "2026-07-01",
+              "priority": "MEDIUM",
+              "progress_percentage": 0,
+              "monthly_target": 1000,
+              "created_at": "2026-01-26T10:00:00Z"
+            }
+          }
+        },
+
+        "get_goals": {
+          "method": "GET",
+          "endpoint": "/goals",
+          "description": "Get all financial goals",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "goals": [
+                {
+                  "goal_id": "goal_111",
+                  "goal_type": "SAVINGS",
+                  "goal_name": "Emergency Fund",
+                  "target_amount": 10000,
+                  "current_amount": 2500,
+                  "target_date": "2026-12-31",
+                  "priority": "HIGH",
+                  "progress_percentage": 25,
+                  "monthly_target": 681.82,
+                  "on_track": true
+                }
+              ]
+            }
+          }
+        },
+
+        "update_goal_progress": {
+          "method": "PUT",
+          "endpoint": "/goals/{goal_id}/progress",
+          "description": "Update progress on a goal",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "amount_to_add": 500,
+            "note": "Monthly contribution"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "goal_id": "goal_111",
+              "previous_amount": 2500,
+              "current_amount": 3000,
+              "target_amount": 10000,
+              "progress_percentage": 30,
+              "updated_at": "2026-01-26T15:00:00Z"
+            }
+          }
+        }
+      },
+
+      "9_budget": {
+        "get_budget": {
+          "method": "GET",
+          "endpoint": "/budget",
+          "description": "Get current budget settings",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "budget_id": "bud_333",
+              "monthly_income": 5000,
+              "categories": {
+                "housing": {
+                  "budgeted": 1500,
+                  "spent": 1500,
+                  "remaining": 0,
+                  "percentage_used": 100
+                },
+                "food": {
+                  "budgeted": 600,
+                  "spent": 645.5,
+                  "remaining": -45.5,
+                  "percentage_used": 107.58
+                }
+              },
+              "total_budgeted": 5000,
+              "total_spent": 3245.67,
+              "remaining": 1754.33
+            }
+          }
+        },
+
+        "update_budget": {
+          "method": "PUT",
+          "endpoint": "/budget",
+          "description": "Update budget allocations",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "housing": 1500,
+            "food": 650,
+            "transportation": 400,
+            "entertainment": 300,
+            "utilities": 200,
+            "savings": 1000,
+            "other": 950
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "budget_id": "bud_333",
+              "updated_at": "2026-01-26T16:00:00Z",
+              "message": "Budget updated successfully"
+            }
+          }
+        }
+      },
+
+      "10_ai_chat": {
+        "create_chat_session": {
+          "method": "POST",
+          "endpoint": "/chat/sessions",
+          "description": "Create a new chat session",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "title": "Budget Review Help"
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "session_id": "chat_sess_999",
+              "user_id": "usr_123456789",
+              "title": "Budget Review Help",
+              "created_at": "2026-01-26T16:30:00Z",
+              "message_count": 0
+            }
+          }
+        },
+
+        "send_message": {
+          "method": "POST",
+          "endpoint": "/chat/sessions/{session_id}/messages",
+          "description": "Send a message and get AI response",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "message": "I'm spending too much on food. Can you analyze my expenses and give suggestions?",
+            "include_context": {
+              "expenses": true,
+              "budget": true,
+              "goals": true,
+              "time_period": "last_30_days"
+            }
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "message_id": "msg_777888",
+              "session_id": "chat_sess_999",
+              "user_message": {
+                "message_id": "msg_777887",
+                "content": "I'm spending too much on food. Can you analyze my expenses and give suggestions?",
+                "sender": "USER",
+                "timestamp": "2026-01-26T16:31:00Z"
+              },
+              "ai_response": {
+                "message_id": "msg_777888",
+                "content": "I've analyzed your food spending for the last 30 days, and you've spent $645.50, which is 7.6% over your $600 budget.\n\nHere are some personalized suggestions:\n\n1. **Restaurant spending**: You spent $280 on restaurants (43% of food budget). Consider reducing dining out to 2-3 times per week instead of current 5-6 times.\n\n2. **Meal planning**: Your grocery expenses are actually reasonable at $365.50. Continue this pattern.\n\n3. **Quick wins**: Your coffee shop expenses are $95/month. Brewing at home could save $60-70 monthly.\n\nWould you like me to create a detailed meal planning strategy or help adjust your budget categories?",
+                "sender": "AI",
+                "timestamp": "2026-01-26T16:31:05Z",
+                "context_used": {
+                  "total_food_spending": 645.5,
+                  "food_budget": 600,
+                  "breakdown": {
+                    "restaurants": 280,
+                    "groceries": 365.5,
+                    "coffee_shops": 95
+                  },
+                  "analysis_period": "2025-12-27 to 2026-01-26"
+                }
+              }
+            }
+          }
+        },
+
+        "get_chat_history": {
+          "method": "GET",
+          "endpoint": "/chat/sessions/{session_id}/messages",
+          "description": "Get chat conversation history",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "limit": 50,
+            "offset": 0
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "session_id": "chat_sess_999",
+              "messages": [
+                {
+                  "message_id": "msg_777887",
+                  "content": "I'm spending too much on food. Can you analyze my expenses?",
+                  "sender": "USER",
+                  "timestamp": "2026-01-26T16:31:00Z"
+                },
+                {
+                  "message_id": "msg_777888",
+                  "content": "I've analyzed your food spending...",
+                  "sender": "AI",
+                  "timestamp": "2026-01-26T16:31:05Z"
+                }
+              ],
+              "pagination": {
+                "total": 2,
+                "limit": 50,
+                "offset": 0
+              }
+            }
+          }
+        },
+
+        "get_all_sessions": {
+          "method": "GET",
+          "endpoint": "/chat/sessions",
+          "description": "Get all chat sessions for user",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "sessions": [
+                {
+                  "session_id": "chat_sess_999",
+                  "title": "Budget Review Help",
+                  "last_message": "Would you like me to create a detailed meal planning strategy?",
+                  "message_count": 6,
+                  "created_at": "2026-01-26T16:30:00Z",
+                  "updated_at": "2026-01-26T16:45:00Z"
+                }
+              ]
+            }
+          }
+        },
+
+        "get_ai_insights": {
+          "method": "GET",
+          "endpoint": "/chat/insights",
+          "description": "Get proactive AI insights based on spending patterns",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "insights": [
+                {
+                  "insight_id": "ins_001",
+                  "type": "OVERSPENDING_ALERT",
+                  "severity": "MEDIUM",
+                  "title": "Food spending above budget",
+                  "message": "You've spent 7.6% more than your food budget this month. Consider meal planning to save $45.",
+                  "category": "FOOD",
+                  "amount_over": 45.5,
+                  "suggestions": [
+                    "Reduce dining out frequency",
+                    "Prepare meals at home",
+                    "Use grocery shopping list"
+                  ],
+                  "created_at": "2026-01-26T08:00:00Z"
+                },
+                {
+                  "insight_id": "ins_002",
+                  "type": "SAVINGS_OPPORTUNITY",
+                  "severity": "LOW",
+                  "title": "Potential savings identified",
+                  "message": "You have $1,754 remaining this month. Consider allocating $500 to your Emergency Fund goal.",
+                  "suggested_action": "ALLOCATE_TO_GOAL",
+                  "goal_id": "goal_111",
+                  "amount": 500,
+                  "created_at": "2026-01-26T08:00:00Z"
+                },
+                {
+                  "insight_id": "ins_003",
+                  "type": "GOAL_PROGRESS",
+                  "severity": "INFO",
+                  "title": "Emergency Fund on track",
+                  "message": "Great job! You're on track to reach your Emergency Fund goal by December 2026.",
+                  "goal_id": "goal_111",
+                  "progress_percentage": 30,
+                  "created_at": "2026-01-26T08:00:00Z"
+                }
+              ],
+              "summary": {
+                "total_insights": 3,
+                "unread_count": 2
+              }
+            }
+          }
+        },
+
+        "delete_chat_session": {
+          "method": "DELETE",
+          "endpoint": "/chat/sessions/{session_id}",
+          "description": "Delete a chat session",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "session_id": "chat_sess_999",
+              "deleted": true,
+              "deleted_at": "2026-01-26T17:00:00Z"
+            }
+          }
+        }
+      },
+
+      "11_notifications": {
+        "get_notifications": {
+          "method": "GET",
+          "endpoint": "/notifications",
+          "description": "Get user notifications",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "type": "BUDGET_ALERT",
+            "read": false,
+            "limit": 20,
+            "offset": 0
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "notifications": [
+                {
+                  "notification_id": "notif_001",
+                  "type": "BUDGET_ALERT",
+                  "title": "Food budget exceeded",
+                  "message": "You've exceeded your food budget by $45.50",
+                  "priority": "MEDIUM",
+                  "read": false,
+                  "action_url": "/analytics/spending-summary?category=FOOD",
+                  "created_at": "2026-01-26T18:00:00Z"
+                },
+                {
+                  "notification_id": "notif_002",
+                  "type": "GOAL_MILESTONE",
+                  "title": "Goal milestone reached",
+                  "message": "Congratulations! You've reached 30% of your Emergency Fund goal",
+                  "priority": "LOW",
+                  "read": false,
+                  "action_url": "/goals/goal_111",
+                  "created_at": "2026-01-26T15:30:00Z"
+                }
+              ],
+              "pagination": {
+                "total": 15,
+                "limit": 20,
+                "offset": 0,
+                "has_more": false
+              },
+              "unread_count": 8
+            }
+          }
+        },
+
+        "mark_notification_read": {
+          "method": "PUT",
+          "endpoint": "/notifications/{notification_id}/read",
+          "description": "Mark notification as read",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "notification_id": "notif_001",
+              "read": true,
+              "read_at": "2026-01-26T19:00:00Z"
+            }
+          }
+        },
+
+        "mark_all_read": {
+          "method": "PUT",
+          "endpoint": "/notifications/mark-all-read",
+          "description": "Mark all notifications as read",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "marked_count": 8,
+              "marked_at": "2026-01-26T19:05:00Z"
+            }
+          }
+        },
+
+        "get_notification_settings": {
+          "method": "GET",
+          "endpoint": "/notifications/settings",
+          "description": "Get notification preferences",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "email_notifications": {
+                "budget_alerts": true,
+                "goal_milestones": true,
+                "weekly_summary": true,
+                "monthly_report": true
+              },
+              "push_notifications": {
+                "budget_alerts": true,
+                "goal_milestones": true,
+                "unusual_spending": true,
+                "bill_reminders": true
+              },
+              "frequency": {
+                "weekly_summary_day": "MONDAY",
+                "monthly_report_day": 1
+              }
+            }
+          }
+        },
+
+        "update_notification_settings": {
+          "method": "PUT",
+          "endpoint": "/notifications/settings",
+          "description": "Update notification preferences",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "email_notifications": {
+              "budget_alerts": true,
+              "weekly_summary": false
+            },
+            "push_notifications": {
+              "unusual_spending": false
+            }
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "updated": true,
+              "updated_at": "2026-01-26T19:10:00Z"
+            }
+          }
+        }
+      },
+
+      "12_recurring_transactions": {
+        "create_recurring_expense": {
+          "method": "POST",
+          "endpoint": "/recurring/expenses",
+          "description": "Create a recurring expense",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "amount": 1500,
+            "category": "HOUSING",
+            "subcategory": "Rent",
+            "description": "Monthly rent payment",
+            "frequency": "MONTHLY",
+            "start_date": "2026-01-01",
+            "end_date": null,
+            "day_of_month": 1,
+            "payment_method": "BANK_TRANSFER",
+            "merchant": "Property Management Co",
+            "auto_create": true
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "recurring_id": "rec_exp_001",
+              "amount": 1500,
+              "category": "HOUSING",
+              "frequency": "MONTHLY",
+              "next_occurrence": "2026-02-01",
+              "auto_create": true,
+              "created_at": "2026-01-26T10:00:00Z"
+            }
+          }
+        },
+
+        "get_recurring_transactions": {
+          "method": "GET",
+          "endpoint": "/recurring/transactions",
+          "description": "Get all recurring transactions",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "type": "EXPENSE",
+            "active": true
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "recurring_transactions": [
+                {
+                  "recurring_id": "rec_exp_001",
+                  "type": "EXPENSE",
+                  "amount": 1500,
+                  "category": "HOUSING",
+                  "description": "Monthly rent payment",
+                  "frequency": "MONTHLY",
+                  "next_occurrence": "2026-02-01",
+                  "is_active": true,
+                  "auto_create": true
+                },
+                {
+                  "recurring_id": "rec_inc_001",
+                  "type": "INCOME",
+                  "amount": 5000,
+                  "source": "SALARY",
+                  "description": "Monthly salary",
+                  "frequency": "MONTHLY",
+                  "next_occurrence": "2026-02-25",
+                  "is_active": true,
+                  "auto_create": true
+                }
+              ]
+            }
+          }
+        },
+
+        "update_recurring_transaction": {
+          "method": "PUT",
+          "endpoint": "/recurring/transactions/{recurring_id}",
+          "description": "Update recurring transaction",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "amount": 1550,
+            "is_active": true
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "recurring_id": "rec_exp_001",
+              "amount": 1550,
+              "updated_at": "2026-01-26T11:00:00Z"
+            }
+          }
+        },
+
+        "delete_recurring_transaction": {
+          "method": "DELETE",
+          "endpoint": "/recurring/transactions/{recurring_id}",
+          "description": "Delete recurring transaction",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "recurring_id": "rec_exp_001",
+              "deleted": true,
+              "deleted_at": "2026-01-26T12:00:00Z"
+            }
+          }
+        }
+      },
+
+      "13_bill_reminders": {
+        "create_bill_reminder": {
+          "method": "POST",
+          "endpoint": "/bills/reminders",
+          "description": "Create a bill reminder",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "bill_name": "Internet Bill",
+            "amount": 79.99,
+            "category": "UTILITIES",
+            "due_date": "2026-02-15",
+            "frequency": "MONTHLY",
+            "reminder_days_before": 3,
+            "auto_pay": false,
+            "merchant": "ISP Provider"
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "bill_id": "bill_001",
+              "bill_name": "Internet Bill",
+              "amount": 79.99,
+              "due_date": "2026-02-15",
+              "reminder_date": "2026-02-12",
+              "status": "PENDING",
+              "created_at": "2026-01-26T10:00:00Z"
+            }
+          }
+        },
+
+        "get_upcoming_bills": {
+          "method": "GET",
+          "endpoint": "/bills/upcoming",
+          "description": "Get upcoming bills",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "days": 30
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "upcoming_bills": [
+                {
+                  "bill_id": "bill_001",
+                  "bill_name": "Internet Bill",
+                  "amount": 79.99,
+                  "category": "UTILITIES",
+                  "due_date": "2026-02-15",
+                  "days_until_due": 20,
+                  "status": "PENDING",
+                  "auto_pay": false
+                },
+                {
+                  "bill_id": "bill_002",
+                  "bill_name": "Car Insurance",
+                  "amount": 150,
+                  "category": "TRANSPORTATION",
+                  "due_date": "2026-02-01",
+                  "days_until_due": 6,
+                  "status": "PENDING",
+                  "auto_pay": true
+                }
+              ],
+              "total_amount": 229.99,
+              "summary": {
+                "total_bills": 2,
+                "overdue_count": 0,
+                "pending_count": 2,
+                "paid_count": 0
+              }
+            }
+          }
+        },
+
+        "mark_bill_paid": {
+          "method": "PUT",
+          "endpoint": "/bills/{bill_id}/paid",
+          "description": "Mark bill as paid",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "paid_amount": 79.99,
+            "paid_date": "2026-01-26",
+            "payment_method": "CREDIT_CARD",
+            "create_expense": true
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "bill_id": "bill_001",
+              "status": "PAID",
+              "paid_amount": 79.99,
+              "paid_date": "2026-01-26",
+              "expense_id": "exp_888999",
+              "next_due_date": "2026-03-15"
+            }
+          }
+        }
+      },
+
+      "14_reports": {
+        "generate_monthly_report": {
+          "method": "POST",
+          "endpoint": "/reports/monthly",
+          "description": "Generate monthly financial report",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "month": "2026-01",
+            "format": "PDF",
+            "include_charts": true
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "report_id": "report_001",
+              "month": "2026-01",
+              "format": "PDF",
+              "download_url": "https://api.yourapp.com/v1/reports/report_001/download",
+              "expires_at": "2026-02-26T10:00:00Z",
+              "summary": {
+                "total_income": 5000,
+                "total_expenses": 3245.67,
+                "net_savings": 1754.33,
+                "savings_rate": 35.09,
+                "top_category": "HOUSING"
+              },
+              "generated_at": "2026-01-26T20:00:00Z"
+            }
+          }
+        },
+
+        "get_tax_summary": {
+          "method": "GET",
+          "endpoint": "/reports/tax-summary",
+          "description": "Get tax deductible expenses summary",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "year": 2025
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "year": 2025,
+              "tax_deductible_categories": [
+                {
+                  "category": "HEALTHCARE",
+                  "total_amount": 2450.75,
+                  "transaction_count": 18,
+                  "deductible_percentage": 100
+                },
+                {
+                  "category": "CHARITABLE_DONATIONS",
+                  "total_amount": 1200,
+                  "transaction_count": 12,
+                  "deductible_percentage": 100
+                },
+                {
+                  "category": "BUSINESS_EXPENSES",
+                  "total_amount": 3780.5,
+                  "transaction_count": 45,
+                  "deductible_percentage": 100
+                }
+              ],
+              "total_deductible": 7431.25,
+              "generated_at": "2026-01-26T20:10:00Z"
+            }
+          }
+        },
+
+        "export_data": {
+          "method": "POST",
+          "endpoint": "/reports/export",
+          "description": "Export user data",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "data_types": ["expenses", "income", "goals", "budget"],
+            "format": "CSV",
+            "start_date": "2025-01-01",
+            "end_date": "2025-12-31"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "export_id": "export_001",
+              "format": "CSV",
+              "download_url": "https://api.yourapp.com/v1/reports/exports/export_001/download",
+              "file_size_bytes": 245678,
+              "expires_at": "2026-02-02T20:15:00Z",
+              "created_at": "2026-01-26T20:15:00Z"
+            }
+          }
+        }
+      },
+
+      "15_tags": {
+        "create_tag": {
+          "method": "POST",
+          "endpoint": "/tags",
+          "description": "Create a custom tag",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "name": "vacation",
+            "color": "#FF5733"
+          },
+          "response_success": {
+            "status": 201,
+            "data": {
+              "tag_id": "tag_001",
+              "name": "vacation",
+              "color": "#FF5733",
+              "usage_count": 0,
+              "created_at": "2026-01-26T10:00:00Z"
+            }
+          }
+        },
+
+        "get_tags": {
+          "method": "GET",
+          "endpoint": "/tags",
+          "description": "Get all user tags",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "tags": [
+                {
+                  "tag_id": "tag_001",
+                  "name": "vacation",
+                  "color": "#FF5733",
+                  "usage_count": 15
+                },
+                {
+                  "tag_id": "tag_002",
+                  "name": "business",
+                  "color": "#3498DB",
+                  "usage_count": 42
+                }
+              ]
+            }
+          }
+        },
+
+        "get_expenses_by_tag": {
+          "method": "GET",
+          "endpoint": "/tags/{tag_id}/expenses",
+          "description": "Get expenses with specific tag",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "query_parameters": {
+            "start_date": "2026-01-01",
+            "end_date": "2026-01-31"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "tag": {
+                "tag_id": "tag_001",
+                "name": "vacation"
+              },
+              "expenses": [
+                {
+                  "expense_id": "exp_999",
+                  "amount": 150,
+                  "category": "TRAVEL",
+                  "description": "Flight tickets",
+                  "date": "2026-01-15"
+                }
+              ],
+              "total_amount": 150,
+              "count": 1
+            }
+          }
+        }
+      },
+
+      "16_savings_insights": {
+        "get_savings_opportunities": {
+          "method": "GET",
+          "endpoint": "/insights/savings-opportunities",
+          "description": "Get AI-powered savings opportunities",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "opportunities": [
+                {
+                  "opportunity_id": "opp_001",
+                  "type": "SUBSCRIPTION_UNUSED",
+                  "title": "Unused subscription detected",
+                  "description": "You haven't used your Gym membership in 60 days",
+                  "potential_savings_monthly": 49.99,
+                  "potential_savings_yearly": 599.88,
+                  "category": "HEALTH",
+                  "confidence": "HIGH",
+                  "recommendation": "Consider canceling or freezing this subscription"
+                },
+                {
+                  "opportunity_id": "opp_002",
+                  "type": "CHEAPER_ALTERNATIVE",
+                  "title": "Expensive grocery shopping",
+                  "description": "You could save by shopping at budget-friendly stores",
+                  "potential_savings_monthly": 120,
+                  "potential_savings_yearly": 1440,
+                  "category": "FOOD",
+                  "confidence": "MEDIUM",
+                  "recommendation": "Try shopping at Aldi or Costco for groceries"
+                }
+              ],
+              "total_monthly_potential": 169.99,
+              "total_yearly_potential": 2039.88
+            }
+          }
+        },
+
+        "get_spending_anomalies": {
+          "method": "GET",
+          "endpoint": "/insights/anomalies",
+          "description": "Detect unusual spending patterns",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "anomalies": [
+                {
+                  "anomaly_id": "anom_001",
+                  "type": "UNUSUAL_SPIKE",
+                  "category": "SHOPPING",
+                  "detected_date": "2026-01-20",
+                  "amount": 450,
+                  "average_amount": 150,
+                  "deviation_percentage": 200,
+                  "description": "Shopping expenses are 200% higher than usual",
+                  "transactions": [
+                    {
+                      "expense_id": "exp_777",
+                      "amount": 450,
+                      "description": "Electronics purchase",
+                      "date": "2026-01-20"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+
+      "17_dashboard": {
+        "get_dashboard_summary": {
+          "method": "GET",
+          "endpoint": "/dashboard/summary",
+          "description": "Get complete dashboard data",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "period": "CURRENT_MONTH",
+              "financial_overview": {
+                "total_income": 5000,
+                "total_expenses": 3245.67,
+                "net_savings": 1754.33,
+                "savings_rate": 35.09
+              },
+              "budget_summary": {
+                "total_budget": 5000,
+                "total_spent": 3245.67,
+                "remaining": 1754.33,
+                "categories_over_budget": 1,
+                "categories_under_budget": 5
+              },
+              "recent_transactions": [
+                {
+                  "expense_id": "exp_latest",
+                  "amount": 45.5,
+                  "category": "FOOD",
+                  "description": "Groceries",
+                  "date": "2026-01-26"
+                }
+              ],
+              "goals_progress": [
+                {
+                  "goal_id": "goal_111",
+                  "goal_name": "Emergency Fund",
+                  "progress_percentage": 30,
+                  "on_track": true
+                }
+              ],
+              "upcoming_bills": [
+                {
+                  "bill_id": "bill_002",
+                  "bill_name": "Car Insurance",
+                  "amount": 150,
+                  "due_date": "2026-02-01",
+                  "days_until_due": 6
+                }
+              ],
+              "quick_insights": [
+                {
+                  "type": "SAVINGS_STREAK",
+                  "message": "Great! You've saved money for 3 consecutive months"
+                },
+                {
+                  "type": "TOP_CATEGORY",
+                  "message": "Housing is your largest expense at 46% of spending"
+                }
+              ]
+            }
+          }
+        }
+      },
+
+      "18_settings": {
+        "get_user_settings": {
+          "method": "GET",
+          "endpoint": "/settings",
+          "description": "Get all user settings",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "currency": "USD",
+              "timezone": "America/New_York",
+              "date_format": "MM/DD/YYYY",
+              "language": "en",
+              "theme": "LIGHT",
+              "default_view": "DASHBOARD",
+              "privacy": {
+                "data_sharing": false,
+                "analytics": true
+              }
+            }
+          }
+        },
+
+        "update_settings": {
+          "method": "PUT",
+          "endpoint": "/settings",
+          "description": "Update user settings",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "theme": "DARK",
+            "currency": "EUR"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "updated_fields": ["theme", "currency"],
+              "updated_at": "2026-01-26T21:00:00Z"
+            }
+          }
+        },
+
+        "change_password": {
+          "method": "PUT",
+          "endpoint": "/settings/password",
+          "description": "Change user password",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "current_password": "oldPassword123",
+            "new_password": "newSecurePassword456"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "message": "Password updated successfully",
+              "updated_at": "2026-01-26T21:05:00Z"
+            }
+          }
+        },
+
+        "delete_account": {
+          "method": "DELETE",
+          "endpoint": "/settings/account",
+          "description": "Delete user account and all data",
+          "headers": {
+            "Authorization": "Bearer {access_token}"
+          },
+          "request": {
+            "password": "currentPassword123",
+            "confirmation": "DELETE_MY_ACCOUNT"
+          },
+          "response_success": {
+            "status": 200,
+            "data": {
+              "message": "Account scheduled for deletion",
+              "deletion_date": "2026-02-09T21:10:00Z",
+              "data_retention_days": 14
+            }
+          }
+        }
+      }
+    },
+
+    "error_codes": {
+      "400_BAD_REQUEST": {
+        "EMAIL_ALREADY_EXISTS": "Email is already registered",
+        "INVALID_INPUT": "Invalid input data provided",
+        "BUDGET_EXCEEDED": "Total budget allocations exceed income"
+      },
+      "401_UNAUTHORIZED": {
+        "INVALID_CREDENTIALS": "Invalid email or password",
+        "TOKEN_EXPIRED": "Access token has expired",
+        "TOKEN_INVALID": "Invalid access token"
+      },
+      "403_FORBIDDEN": {
+        "INSUFFICIENT_PERMISSIONS": "You don't have permission to access this resource",
+        "ACCOUNT_SUSPENDED": "Your account has been suspended"
+      },
+      "404_NOT_FOUND": {
+        "RESOURCE_NOT_FOUND": "Requested resource not found",
+        "USER_NOT_FOUND": "User not found",
+        "EXPENSE_NOT_FOUND": "Expense not found"
+      },
+      "409_CONFLICT": {
+        "DUPLICATE_ENTRY": "Duplicate entry exists",
+        "CONCURRENT_UPDATE": "Resource was modified by another request"
+      },
+      "429_RATE_LIMIT": {
+        "TOO_MANY_REQUESTS": "Rate limit exceeded. Please try again later"
+      },
+      "500_INTERNAL_ERROR": {
+        "SERVER_ERROR": "Internal server error occurred",
+        "DATABASE_ERROR": "Database operation failed"
+      }
+    },
+
+    "pagination_format": {
+      "description": "Standard pagination format used across all list endpoints",
+      "query_parameters": {
+        "limit": "Number of items per page (default: 20, max: 100)",
+        "offset": "Number of items to skip (default: 0)",
+        "sort": "Sort order (e.g., date_desc, amount_asc)",
+        "search": "Search query string"
+      },
+      "response_format": {
+        "data": "Array of items",
+        "pagination": {
+          "total": "Total number of items",
+          "limit": "Items per page",
+          "offset": "Current offset",
+          "has_more": "Boolean indicating if more items exist"
+        }
+      }
+    },
+
+    "webhook_events": {
+      "description": "Webhook events that can be subscribed to",
+      "endpoint": "POST /webhooks/subscriptions",
+      "available_events": [
+        "expense.created",
+        "expense.updated",
+        "expense.deleted",
+        "budget.exceeded",
+        "goal.milestone_reached",
+        "goal.completed",
+        "bill.due_soon",
+        "bill.overdue",
+        "insight.generated",
+        "anomaly.detected"
+      ],
+      "webhook_payload_format": {
+        "event_type": "expense.created",
+        "event_id": "evt_123456",
+        "timestamp": "2026-01-26T22:00:00Z",
+        "data": {
+          "object_type": "expense",
+          "object_id": "exp_555666777",
+          "user_id": "usr_123456789",
+          "changes": {}
+        }
+      }
+    }
+  }
+}

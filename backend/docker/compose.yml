@@ -1,13 +1,13 @@
-name: curatix
+name: walletiq
 services:
 
   # postgreSql
   postgres:
     image: postgres:16-alpine
-    container_name: curatix-postgres
+    container_name: walletiq-postgres
     restart: on-failure
     environment:
-      - POSTGRES_DB=curatix
+      - POSTGRES_DB=walletiq
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password8080
     ports:
@@ -15,51 +15,34 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - curatix-network
+      - walletiq-network
 
   # redis
   redis:
     image: redis:alpine
-    container_name: curatix-redis
+    container_name: walletiq-redis
     restart: on-failure
     ports:
       - "${DOCKER_REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
     networks:
-      - curatix-network
-
-  # elasticsearch
-  elasticsearch:
-    image: elasticsearch:9.2.3
-    container_name: curatix-elasticsearch
-    restart: unless-stopped
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
-    ports:
-      - "9200:9200"
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
-    networks:
-      - curatix-network
+      - walletiq-network
 
   #zipkin
   zipkin:
     image: openzipkin/zipkin:latest
-    container_name: curatix-zipkin
+    container_name: walletiq-zipkin
     restart: unless-stopped
     ports:
       - "9411:9411"
     networks:
-      - curatix-network
+      - walletiq-network
 
 volumes:
   postgres-data:
   redis-data:
-  es-data:
 
 networks:
-  curatix-network:
+  walletiq-network:
     driver: bridge

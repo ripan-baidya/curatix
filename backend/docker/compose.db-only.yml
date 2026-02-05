@@ -1,15 +1,15 @@
-name: curatix
+name: walletiq
 services:
 
   # postgresql
   postgres:
     image: postgres:16-alpine
-    container_name: curatix-postgres
+    container_name: walletiq-postgres
     restart: on-failure
     environment:
-      - POSTGRES_USER=curatix
-      - POSTGRES_PASSWORD=curatix
-      - POSTGRES_DB=curatix
+      - POSTGRES_USER=walletiq
+      - POSTGRES_PASSWORD=walletiq
+      - POSTGRES_DB=walletiq
     ports:
       - "${DOCKER_POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -18,7 +18,7 @@ services:
   # redis
   redis:
     image: redis:alpine
-    container_name: curatix-redis
+    container_name: walletiq-redis
     restart: on-failure
     ports:
       - "${DOCKER_REDIS_PORT:-6379}:6379"

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-lg">
+      <h2 class="text-2xl font-semibold mb-6">Financial Onboarding</h2>
+
+      <!-- STEP 1 -->
+      <div id="step-1">
+        <h3 class="font-medium mb-4">Basic Information</h3>
+
+        <input
+          id="income"
+          type="number"
+          placeholder="Monthly Income"
+          class="w-full border p-2 rounded mb-3"
+        />
+
+        <select id="currency" class="w-full border p-2 rounded mb-3">
+          <option value="USD">USD</option>
+          <option value="INR">INR</option>
+        </select>
+
+        <input
+          id="occupation"
+          type="text"
+          placeholder="Occupation"
+          class="w-full border p-2 rounded mb-3"
+        />
+
+        <button
+          onclick="nextStep(2)"
+          class="bg-blue-600 text-white px-4 py-2 rounded w-full"
+        >
+          Next
+        </button>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step-2" class="hidden">
+        <h3 class="font-medium mb-4">Financial Goal</h3>
+
+        <input
+          id="goal-name"
+          placeholder="Goal Name"
+          class="w-full border p-2 rounded mb-3"
+        />
+
+        <input
+          id="target-amount"
+          type="number"
+          placeholder="Target Amount"
+          class="w-full border p-2 rounded mb-3"
+        />
+
+        <select id="priority" class="w-full border p-2 rounded mb-3">
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+
+        <button
+          onclick="nextStep(3)"
+          class="bg-blue-600 text-white px-4 py-2 rounded w-full"
+        >
+          Next
+        </button>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step-3" class="hidden">
+        <h3 class="font-medium mb-4">Budget Preferences</h3>
+
+        <input
+          id="housing"
+          type="number"
+          placeholder="Housing Budget"
+          class="w-full border p-2 rounded mb-3"
+        />
+
+        <input
+          id="food"
+          type="number"
+          placeholder="Food Budget"
+          class="w-full border p-2 rounded mb-3"
+        />
+
+        <button
+          onclick="submitOnboarding()"
+          class="bg-green-600 text-white px-4 py-2 rounded w-full"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const onboardingData = {
+        financial_goals: [],
+        budget_preferences: {},
+      };
+
+      function nextStep(step) {
+        document
+          .querySelectorAll('[id^="step"]')
+          .forEach((el) => el.classList.add("hidden"));
+        document.getElementById(`step-${step}`).classList.remove("hidden");
+
+        if (step === 2) {
+          onboardingData.monthly_income =
+            document.getElementById("income").value;
+          onboardingData.currency = document.getElementById("currency").value;
+          onboardingData.occupation =
+            document.getElementById("occupation").value;
+        }
+
+        if (step === 3) {
+          onboardingData.financial_goals.push({
+            goal_type: "SAVINGS",
+            goal_name: document.getElementById("goal-name").value,
+            target_amount: document.getElementById("target-amount").value,
+            priority: document.getElementById("priority").value,
+          });
+        }
+      }
+
+      function submitOnboarding() {
+        onboardingData.budget_preferences = {
+          housing: document.getElementById("housing").value,
+          food: document.getElementById("food").value,
+        };
+
+        console.log("Final Request Body:", onboardingData);
+
+        // fetch('/onboarding/complete', { method: 'POST', body: JSON.stringify(onboardingData) })
+      }
+    </script>
+  </body>
+</html>

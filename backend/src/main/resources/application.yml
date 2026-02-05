@@ -1,8 +1,8 @@
-# +++++ Main +++++
+# * ---------------- Main  ---------------- *
 
 spring:
   application:
-    name: 'curatix'
+    name: 'walletIQ'
 
   # Profile
   profiles:
